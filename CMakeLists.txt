@@ -8,7 +8,8 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-# Add project_options from https://github.com/aminya/project_options
+option(ENABLE_CROSS_COMPILING "Detect cross compiler and setup toolchain" OFF)
+
 set(PROJECT_OPTIONS_VERSION "v0.29.0")
 FetchContent_Declare(
   _project_options
@@ -18,11 +19,20 @@ include(${_project_options_SOURCE_DIR}/Index.cmake)
 
 option(FEATURE_TESTS "Enable the tests" OFF)
 
-option(ENABLE_CROSS_COMPILING "Detect cross compiler and setup toolchain" OFF)
-
 if(ENABLE_CROSS_COMPILING)
-  enable_cross_compiler()
+  FetchContent_Declare(
+    _stm32_cmake
+    GIT_REPOSITORY https://github.com/ObKo/stm32-cmake.git
+    GIT_TAG e8c282e982310d9eab3af82fc01f2762c094359b)
+  FetchContent_MakeAvailable(_stm32_cmake)
+  set(CMAKE_TOOLCHAIN_FILE ${_stm32_cmake_SOURCE_DIR}/cmake/stm32_gcc.cmake)
+  set(VCPKG_TARGET_TRIPLET "arm-none-eabi")
+  # set(VCPKG_DEFAULT_TRIPLET "arm-none-eabi")
+  set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE ${CMAKE_TOOLCHAIN_FILE})
 endif()
+
+# Install vcpkg dependencies
+run_vcpkg()
 
 project(
   stm32-cmake-template
@@ -87,29 +97,4 @@ project_options(
   # ENABLE_UNITY
 )
 
-#add_subdirectory(./my_exe)
-#add_subdirectory(./my_lib)
-#add_subdirectory(./my_header_lib)
-
-# the variables set using CACHE STRING "" are passed to package_project
-
-# Package the project
-#package_project(
-#  TARGETS
-#  my_exe
-#  my_lib
-#  my_header_lib
-#  my_project_options
-#  my_project_warnings)
-
-# set the startup project for the "play" button in MSVC
-#set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT my_exe)
-
-# Experience shows that explicit package naming can help make it easier to sort
-# out potential ABI related issues before they start, while helping you
-# track a build to a specific GIT SHA
-#set(CPACK_PACKAGE_FILE_NAME
-#    "${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION}-${GIT_SHORT_SHA}-${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}"
-#)
-
-#include(CPack)
+add_subdirectory(src)
