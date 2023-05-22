@@ -190,18 +190,13 @@
             }
         },
         {
-            "name": "embedded-gcc-arm-release",
+            "name": "gcc-arm-release",
             "displayName": "gcc arm Release",
             "description": "Target embedded ARM with the gcc compiler, release build type",
             "inherits": "conf-linux-common",
             "cacheVariables": {
-                "CMAKE_SYSTEM_PROCESSOR": "arm",
-                "DEFAULT_TRIPLET": "arm-none-eabi",
-                "CMAKE_C_COMPILER": "arm-none-eabi-gcc",
-                "CMAKE_CXX_COMPILER": "arm-none-eabi-g++",
-                "TARGET_ARCHITECTURE": "cortex-m4",
-                "ENABLE_CROSS_COMPILING": true,
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "ENABLE_CROSS_COMPILING": true
             }
         }
     ],

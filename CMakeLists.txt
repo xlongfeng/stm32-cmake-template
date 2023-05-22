@@ -3,32 +3,17 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-include(FetchContent)
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
-  cmake_policy(SET CMP0135 NEW)
-endif()
-
-option(ENABLE_CROSS_COMPILING "Detect cross compiler and setup toolchain" OFF)
-
-set(PROJECT_OPTIONS_VERSION "v0.29.0")
-FetchContent_Declare(
-  _project_options
-  URL https://github.com/aminya/project_options/archive/refs/tags/${PROJECT_OPTIONS_VERSION}.zip)
-FetchContent_MakeAvailable(_project_options)
-include(${_project_options_SOURCE_DIR}/Index.cmake)
+include($ENV{PROJECT_OPTIONS_SRC}/Index.cmake)
 
 option(FEATURE_TESTS "Enable the tests" OFF)
 
+option(ENABLE_CROSS_COMPILING "Detect cross compiler and setup toolchain" OFF)
+
 if(ENABLE_CROSS_COMPILING)
-  FetchContent_Declare(
-    _stm32_cmake
-    GIT_REPOSITORY https://github.com/ObKo/stm32-cmake.git
-    GIT_TAG e8c282e982310d9eab3af82fc01f2762c094359b)
-  FetchContent_MakeAvailable(_stm32_cmake)
-  set(CMAKE_TOOLCHAIN_FILE ${_stm32_cmake_SOURCE_DIR}/cmake/stm32_gcc.cmake)
-  set(VCPKG_TARGET_TRIPLET "arm-none-eabi")
-  # set(VCPKG_DEFAULT_TRIPLET "arm-none-eabi")
-  set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE ${CMAKE_TOOLCHAIN_FILE})
+  enable_cross_compiler(
+    TARGET_ARCHITECTURE "cortex-m3"
+    TOOLCHAIN_FILE $ENV{STM32_CMAKE_SRC}/cmake/stm32_gcc.cmake
+  )
 endif()
 
 # Install vcpkg dependencies

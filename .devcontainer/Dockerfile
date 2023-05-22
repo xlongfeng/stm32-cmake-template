@@ -25,7 +25,8 @@ RUN apt-get install -y --no-install-recommends \
 
 # Install gcc
 RUN apt-get install -y --no-install-recommends \
-        gcc gcc-arm-none-eabi g++ gdb
+        gcc gcc-arm-none-eabi g++ gdb \
+        libstdc++-arm-none-eabi-newlib
 
 ARG LLVM_VER="14"
 # Install clang ${LLVM_VER}
@@ -35,6 +36,10 @@ RUN apt-get install -y --no-install-recommends \
 # Install C++ test framework
 RUN apt-get install -y --no-install-recommends \
         libgtest-dev libgmock-dev
+
+## Cleanup cached apt data we don't need anymore
+RUN apt-get autoremove -y && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install include-what-you-use
 ENV IWYU /usr/src/iwyu
@@ -58,6 +63,20 @@ RUN mkdir -p $(include-what-you-use -print-resource-dir 2>/dev/null)
 RUN ln -s $(readlink -f /usr/lib/clang/${LLVM_VER}/include) \
     $(include-what-you-use -print-resource-dir 2>/dev/null)/include
 
-## Cleanup cached apt data we don't need anymore
-RUN apt-get autoremove -y && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Clone project_options
+ENV PROJECT_OPTIONS_SRC /usr/src/project_options
+RUN git clone --branch v0.29.0 \
+        https://github.com/aminya/project_options.git \
+        ${PROJECT_OPTIONS_SRC}
+
+# Clone STM32CubeF1
+ENV STM32_CUBE_F1_SRC /usr/src/STM32CubeF1
+RUN git clone --branch master \
+        https://github.com/STMicroelectronics/STM32CubeF1.git \
+        ${STM32_CUBE_F1_SRC}
+
+# Clone stm32-cmake
+ENV STM32_CMAKE_SRC /usr/src/stm32-cmake
+RUN git clone --branch master \
+        https://github.com/ObKo/stm32-cmake.git \
+        ${STM32_CMAKE_SRC}
