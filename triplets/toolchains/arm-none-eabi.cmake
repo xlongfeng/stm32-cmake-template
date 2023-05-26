@@ -7,9 +7,9 @@ endif()
 set(CMAKE_SYSTEM_NAME Generic CACHE STRING "")
 set(CMAKE_SYSTEM_PROCESSOR arm CACHE STRING "")
 
-string(APPEND VCPKG_C_FLAGS " --specs=nosys.specs")
-string(APPEND VCPKG_CXX_FLAGS " --specs=nosys.specs")
-string(APPEND VCPKG_LINKER_FLAGS " --specs=nosys.specs")
+string(APPEND VCPKG_C_FLAGS " --specs=nano.specs")
+string(APPEND VCPKG_CXX_FLAGS " --specs=nano.specs")
+string(APPEND VCPKG_LINKER_FLAGS " --specs=nano.specs")
 
 # Set compiler flags for target
 # -Wall: all warnings activated
