@@ -16,9 +16,6 @@ if(ENABLE_CROSS_COMPILING)
   )
 endif()
 
-# Install vcpkg dependencies
-run_vcpkg()
-
 project(
   stm32-cmake-template
   VERSION 0.0.0
